@@ -1,0 +1,97 @@
+# Writing Toolkit
+
+中文内容创作 SKILL 集合 — 为 Claude Code 提供的一系列写作工具，覆盖从润色去 AI 味到平台合规检查的完整发布流程。
+
+## 包含的 SKILL
+
+### publish-guard — 发布守卫
+
+发布前自动扫描小红书和微信公众号的合规问题：
+- 禁用词扫描（极限词、营销词、政治敏感词）
+- 灰色词汇计数（≤2 个限额）
+- 最高级替换（"最大""最快"→ 具体描述）
+- 外文专有名词首次出现格式检查
+- 标题安全评估
+
+### humanize-plus — 增强版去 AI 味
+
+在 humanizer-zh 基础上增加结构性检查：
+- 句长方差扫描（短句 ≤5 字 vs 长句 ≥35 字交替）
+- 段高方差扫描（冲击式 / 沉浸式 / 喘息式三类交替）
+- 过渡词多样性（机械过渡 vs 自然过渡）
+- AI 套话扫描（结构套话、开头套话、结尾套话）
+- 第二人称分布检查
+- 口语插入检查
+- 结尾质量评估
+
+## 安装
+
+```bash
+# 克隆仓库
+git clone https://github.com/Konata9/writing-toolkit.git
+
+# 安装 SKILL 到 Claude Code
+mkdir -p ~/.claude/skills
+cp -r writing-toolkit/skills/publish-guard ~/.claude/skills/
+cp -r writing-toolkit/skills/humanize-plus ~/.claude/skills/
+```
+
+## 使用
+
+在 Claude Code 中直接对话即可触发：
+
+```
+"对这篇文章做深度润色"  → 自动调用 humanize-plus
+"检查平台合规"           → 自动调用 publish-guard
+```
+
+也可以在项目 SKILL 工作流中显式调用：
+
+```
+Skill(humanize-plus)     # 深度润色，内容类型选择 narrative/casual/analysis
+Skill(publish-guard)     # 平台合规扫描，平台选择 xiaohongshu/wechat/both
+```
+
+## 依赖关系
+
+```
+humanize-plus  ──内部调用──→  humanizer-zh（表层去 AI 味）
+                              ↓
+                         结构性检查（句长、段高、过渡、套话等 9 维度）
+
+publish-guard  ──独立运行──→  禁用词 / 灰色词汇 / 最高级 / 外文名词 / 标题安全
+```
+
+- `humanize-plus` 依赖 `humanizer-zh`（需预先安装）
+- `publish-guard` 无外部依赖
+
+## SKILL 关系图
+
+```
+创作完成后:
+
+  humanize-plus               publish-guard
+  (深度润色去AI味)     →      (平台合规检查)
+  ┌──────────────┐           ┌──────────────┐
+  │ humanizer-zh  │           │ 禁用词扫描    │
+  │ 句长方差      │           │ 灰色词汇计数  │
+  │ 段高方差      │           │ 最高级替换    │
+  │ 过渡词多样性  │           │ 外文名词规范  │
+  │ AI套话扫描    │           │ 标题安全评估  │
+  │ 第二人称分布  │           └──────────────┘
+  │ 口语插入      │
+  │ 结尾质量      │
+  └──────────────┘
+```
+
+## 适用项目
+
+这些 SKILL 已在以下项目中验证：
+- 编程语言历史故事 (history-of-program-language)
+- 科技吃瓜深度分析 (tech-popcorn)
+- 程序梗百科 (programming-meme-encyclopedia)
+- 科技公司史 (great-company-in-pc-tech)
+
+## License
+
+MIT
