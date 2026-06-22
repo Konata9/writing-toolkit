@@ -30,10 +30,22 @@
 # 克隆仓库
 git clone https://github.com/Konata9/writing-toolkit.git
 
-# 安装 SKILL 到 Claude Code
+# 安装 SKILL 到 Claude Code（复制方式）
 mkdir -p ~/.claude/skills
 cp -r writing-toolkit/skills/publish-guard ~/.claude/skills/
 cp -r writing-toolkit/skills/humanize-plus ~/.claude/skills/
+```
+
+推荐使用软链接方式安装，确保 `git pull` 更新后 SKILL 自动同步，避免多份拷贝：
+
+```bash
+# 克隆仓库（如已克隆可跳过）
+git clone https://github.com/Konata9/writing-toolkit.git
+
+# 软链接安装（推荐）
+mkdir -p ~/.claude/skills
+ln -sfn "$(pwd)/writing-toolkit/skills/publish-guard" ~/.claude/skills/publish-guard
+ln -sfn "$(pwd)/writing-toolkit/skills/humanize-plus" ~/.claude/skills/humanize-plus
 ```
 
 ## 使用
