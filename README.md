@@ -126,12 +126,13 @@ publish-guard  ──独立运行──→  禁用词 / 灰色词汇 / 最高级
 ```
 
 ## 适用项目
+欢迎关注公众号：此方的手账
+![此方的手账](https://raw.githubusercontent.com/Konata9/pic-base/main/pics/此方的手账公众号二维码.png)
 
-这些 SKILL 已在以下项目中验证：
-- 编程语言历史故事 (history-of-program-language)
-- 科技吃瓜深度分析 (tech-popcorn)
-- 程序梗百科 (programming-meme-encyclopedia)
-- 科技公司史 (great-company-in-pc-tech)
+这些 SKILL 已在公众号长文合集中使用：
+- [编程语言知多少？](https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA5MjEzMjg2NA==&action=getalbum&album_id=4504434141060235268#wechat_redirect)
+- [科技爆米花](https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA5MjEzMjg2NA==&action=getalbum&album_id=4450861279548637185#wechat_redirect)
+- [伟大的科技公司](https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzA5MjEzMjg2NA==&action=getalbum&album_id=4465296632921554946#wechat_redirect)
 
 ## License
 
