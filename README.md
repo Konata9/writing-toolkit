@@ -30,32 +30,25 @@
 
 ## 安装
 
-### Claude Code
-
+### General
 ```bash
 # 通过 npx skills 一键安装全部 SKILL（推荐）
 npx skills install Konata9/writing-toolkit
 
+# 全局安装
+npx skills install Konata9/writing-toolkit -g 
+
 # 或分别安装单个 SKILL
 npx skills install Konata9/writing-toolkit/publish-guard
 npx skills install Konata9/writing-toolkit/humanize-plus
-
-# 或克隆仓库手动安装
-git clone https://github.com/Konata9/writing-toolkit.git
-mkdir -p ~/.claude/skills
-cp -r writing-toolkit/skills/publish-guard ~/.claude/skills/
-cp -r writing-toolkit/skills/humanize-plus ~/.claude/skills/
 ```
 
-### OpenCode
-
+### Claude Code/OpenCode
 OpenCode 会自动扫描 `~/.claude/skills/` 目录，安装后重启即可加载：
 
 ```bash
-# 克隆仓库
+# 克隆仓库手动安装
 git clone https://github.com/Konata9/writing-toolkit.git
-
-# 安装 SKILL 到 Claude Code（复制方式）
 mkdir -p ~/.claude/skills
 cp -r writing-toolkit/skills/publish-guard ~/.claude/skills/
 cp -r writing-toolkit/skills/humanize-plus ~/.claude/skills/
