@@ -1,6 +1,6 @@
 # Writing Toolkit
 
-中文内容创作 SKILL 集合 — 为 Claude Code 提供的一系列写作工具，覆盖从润色去 AI 味到平台合规检查的完整发布流程。
+中文内容创作 SKILL 集合 — 为 Claude Code/OpenCode 提供的一系列写作工具，覆盖从润色去 AI 味到平台合规检查的完整发布流程。
 
 ## 包含的 SKILL
 
