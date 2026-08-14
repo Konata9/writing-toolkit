@@ -1,8 +1,33 @@
 # Writing Toolkit
 
-中文内容创作 SKILL 集合 — 为 Claude Code/OpenCode 提供的一系列写作工具，覆盖从润色去 AI 味到平台合规检查的完整发布流程。
+中文内容创作 SKILL 集合 — 为 Claude Code/OpenCode 提供的一系列写作工具，覆盖从调研验证、故事化写作、配图下载，到润色去 AI 味和平台合规检查的完整发布流程。
 
 ## 包含的 SKILL
+
+### source-verify — 来源验证
+
+调研阶段的事实交叉验证与来源可靠性评级：
+- 每个关键事实至少 2 个独立来源
+- 来源优先级判定（学术 > 一手 > 权威参考 > Wikipedia > 个人内容）
+- 可靠性星级评级（1-5 星）
+- 独立来源判断（识别互相抄袭的假"两个来源"）
+
+### image-sourcing — 图片采购
+
+为文章搜索、下载并记录公有领域/CC 许可的配图：
+- 来源优先级（Wikimedia Commons → 博物馆馆藏 → 权威档案）
+- 4 种下载方法（`Special:FilePath` → HTML 抓取 → REST API → 直接下载）
+- 质量阈值验证（文件类型、大小、水印检测）
+- AI 后备方案（参数化 `allow_ai_fallback`，必须标注）
+
+### story-write — 故事化写作
+
+把调研事实写成"有人、有冲突、有起伏"的文章：
+- 标题设计（8 种公式 + 三要素 + 新鲜度测试）
+- 导读块 + 开篇钩子
+- 12 条叙事技法（阻力才是故事、人物锚点、情绪弧线、数字武器化等）
+- AI 痕迹排查清单
+- 小红书配文生成
 
 ### publish-guard — 发布守卫
 
@@ -36,9 +61,12 @@
 npx skills install Konata9/writing-toolkit
 
 # 全局安装
-npx skills install Konata9/writing-toolkit -g 
+npx skills install Konata9/writing-toolkit -g
 
 # 或分别安装单个 SKILL
+npx skills install Konata9/writing-toolkit/source-verify
+npx skills install Konata9/writing-toolkit/image-sourcing
+npx skills install Konata9/writing-toolkit/story-write
 npx skills install Konata9/writing-toolkit/publish-guard
 npx skills install Konata9/writing-toolkit/humanize-plus
 ```
@@ -50,6 +78,9 @@ OpenCode 会自动扫描 `~/.claude/skills/` 目录，安装后重启即可加�
 # 克隆仓库手动安装
 git clone https://github.com/Konata9/writing-toolkit.git
 mkdir -p ~/.claude/skills
+cp -r writing-toolkit/skills/source-verify ~/.claude/skills/
+cp -r writing-toolkit/skills/image-sourcing ~/.claude/skills/
+cp -r writing-toolkit/skills/story-write ~/.claude/skills/
 cp -r writing-toolkit/skills/publish-guard ~/.claude/skills/
 cp -r writing-toolkit/skills/humanize-plus ~/.claude/skills/
 ```
@@ -62,6 +93,9 @@ git clone https://github.com/Konata9/writing-toolkit.git
 
 # 软链接安装（推荐）
 mkdir -p ~/.claude/skills
+ln -sfn "$(pwd)/writing-toolkit/skills/source-verify" ~/.claude/skills/source-verify
+ln -sfn "$(pwd)/writing-toolkit/skills/image-sourcing" ~/.claude/skills/image-sourcing
+ln -sfn "$(pwd)/writing-toolkit/skills/story-write" ~/.claude/skills/story-write
 ln -sfn "$(pwd)/writing-toolkit/skills/publish-guard" ~/.claude/skills/publish-guard
 ln -sfn "$(pwd)/writing-toolkit/skills/humanize-plus" ~/.claude/skills/humanize-plus
 ```
@@ -73,15 +107,21 @@ ln -sfn "$(pwd)/writing-toolkit/skills/humanize-plus" ~/.claude/skills/humanize-
 直接对话即可触发：
 
 ```
-"对这篇文章做深度润色"  → 自动调用 humanize-plus
-"检查平台合规"           → 自动调用 publish-guard
+"对这篇调研做交叉验证"    → 自动调用 source-verify
+"下载这几张配图"          → 自动调用 image-sourcing
+"根据调研写一篇文章"      → 自动调用 story-write
+"对这篇文章做深度润色"    → 自动调用 humanize-plus
+"检查平台合规"            → 自动调用 publish-guard
 ```
 
 也可以在项目 SKILL 工作流中显式调用：
 
 ```
-Skill(humanize-plus)     # 深度润色，内容类型选择 narrative/casual/analysis
-Skill(publish-guard)     # 平台合规扫描，平台选择 xiaohongshu/wechat/both
+Skill(source-verify)   # 交叉验证，输出验证报告
+Skill(image-sourcing)  # 配图下载，参数 allow_ai_fallback / image_types
+Skill(story-write)     # 故事化写作，参数 structure / length
+Skill(humanize-plus)   # 深度润色，内容类型选择 narrative/casual/analysis
+Skill(publish-guard)   # 平台合规扫描，平台选择 xiaohongshu/wechat/both
 ```
 
 ### OpenCode
@@ -89,41 +129,39 @@ Skill(publish-guard)     # 平台合规扫描，平台选择 xiaohongshu/wechat/
 OpenCode 会自动将已安装的 SKILL 注入 agent 上下文。在对话中描述需求即可触发，也可通过 `skill` 工具显式加载：
 
 ```
-"对这篇文章做深度润色，去掉 AI 味"
+"对这篇调研做交叉验证"
+"根据 research 写一篇故事化文章"
 "检查这篇文章在小红书上能不能发"
+```
+
+## 完整创作流水线
+
+```
+确定主题（各项目主编排技能）
+    ↓
+调研 → source-verify（交叉验证）──→ story-write（故事化写作）
+    │                                   ↓
+    └── image-sourcing（配图，可并行）──┤
+                                        ↓
+                              humanize-plus（深度润色去 AI 味）
+                                        ↓
+                              publish-guard（平台合规检查）
+                                        ↓
+                                    发布
 ```
 
 ## 依赖关系
 
 ```
-humanize-plus  ──内部调用──→  humanizer-zh（表层去 AI 味）
-                              ↓
-                         结构性检查（句长、段高、过渡、套话等 9 维度）
-
-publish-guard  ──独立运行──→  禁用词 / 灰色词汇 / 最高级 / 外文名词 / 标题安全
+source-verify   ──独立运行──→  交叉验证 / 来源优先级 / 星级评级
+image-sourcing  ──独立运行──→  图片搜索 / 下载 / 质量验证 / 版权记录
+story-write     ──独立运行──→  标题 / 导读 / 叙事技法 / AI 痕迹排查 / 配文
+humanize-plus   ──内部调用──→  humanizer-zh（表层去 AI 味）+ 结构性检查
+publish-guard   ──独立运行──→  禁用词 / 灰色词汇 / 最高级 / 外文名词 / 标题安全
 ```
 
 - `humanize-plus` 依赖 `humanizer-zh`（需预先安装）
-- `publish-guard` 无外部依赖
-
-## SKILL 关系图
-
-```
-创作完成后:
-
-  humanize-plus               publish-guard
-  (深度润色去AI味)     →      (平台合规检查)
-  ┌──────────────┐           ┌──────────────┐
-  │ humanizer-zh  │           │ 禁用词扫描    │
-  │ 句长方差      │           │ 灰色词汇计数  │
-  │ 段高方差      │           │ 最高级替换    │
-  │ 过渡词多样性  │           │ 外文名词规范  │
-  │ AI套话扫描    │           │ 标题安全评估  │
-  │ 第二人称分布  │           └──────────────┘
-  │ 口语插入      │
-  │ 结尾质量      │
-  └──────────────┘
-```
+- 其余 SKILL 无外部依赖
 
 ## 适用项目
 欢迎关注公众号：此方的手账
