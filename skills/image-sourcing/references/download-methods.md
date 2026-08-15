@@ -85,6 +85,63 @@ curl -s "https://en.wikipedia.org/api/rest_v1/page/media/<ARTICLE_NAME>" \
 curl -sL "<FULL_UPLOAD_URL>" -o assets/<target-filename>.jpg
 ```
 
+### 方法 5：新闻媒体图片直链下载（news_editorial 模式）
+
+用于科技新闻 / 深度报道的新闻实拍图。**先定位图片 URL，再下载。**
+
+#### 5a. 提取文章头图（og:image）
+
+从文章 HTML 中提取 og:image（头图）：
+
+```bash
+curl -sL "<ARTICLE_URL>" | grep -oE '<meta[^>]*property="og:image"[^>]*content="[^"]*"' | head -3
+```
+
+或直接抓取页面中 `upload` / CDN 路径的图片 URL：
+
+```bash
+curl -sL "<ARTICLE_URL>" | grep -oE 'src="[^"]*(image|wp-content/uploads|images2/news/bigimage)[^"]*\.(jpg|jpeg|png|webp)[^"]*"' | head -10
+```
+
+#### 5b. 下载 CDN 直链
+
+拿到原图 URL 后直接下载：
+
+```bash
+curl -sL "<FULL_IMAGE_URL>" -o images/<target-filename>.jpg
+```
+
+常见 CDN 路径特征：`hsossms`（36氪）、`resource/image`（InfoQ）、`i.insider.com`、
+`GettyImages`（人像）。直接下载 CDN 图片，比手动截图清晰。
+
+#### 5c. Playwright 兜底（应对拒爬站点）
+
+某些站点（如 The Register）对 curl / webfetch 返回 403 或 robots 拦截。此时用
+Playwright MCP 浏览器：
+
+1. 导航到图片 URL（`mcpm_playwright_browser_navigate`）
+2. 在 `mcpm_playwright_browser_network_requests` 中找到该图片请求
+3. 用 `mcpm_playwright_browser_network_request` 获取 `response-body` 保存
+
+> **不要用 `page.evaluate` 里的 `fetch`**：跨域图片会被浏览器拦截。正确做法是
+> 导航到图片 URL → 从 network 请求中取 response-body。
+
+#### 5d. WebP 转换
+
+通过 Playwright 下载的图片可能是 WebP 格式（即使文件名是 .jpg）。检查并转换：
+
+```bash
+file images/<filename>.jpg            # 报告 "Web/P image" 则需要转换
+magick images/<filename>.jpg images/<filename>.jpg
+```
+
+#### 5e. 内容验证（必做）
+
+下载后**必须打开/检查图片内容**：封面图通常 1200-2500px 宽，截图通常 1080px 宽。
+- 确认图片与事件相关（有些媒体封面是随机插图，如 InfoQ 的猫/建筑，不要想当然）
+- 人物肖像必须确认是目标人物，不是同名者或无关配图
+- 尺寸/分辨率过低（宽 < 600px）的缩略图丢弃，换其他媒体来源
+
 ---
 
 ## 通用技巧
@@ -135,3 +192,14 @@ ls -lh assets/<filename>.jpg
 | 纪念碑/地标 | 雕像/铭牌/纪念地 | 博物馆复刻、纪念碑 |
 
 **反模式**：同一人物的两张肖像。选最好的一张，删除重复。
+
+### news_editorial 模式的图片类型
+
+| 类型 | 说明 | 示例 |
+|------|------|------|
+| 封面级插图 | 媒体文章头图（og:image），有视觉冲击力 | 事件相关的高质量新闻图 |
+| 人物肖像 | 事件核心人物的照片（专访/发布会图） | CEO 演讲照 |
+| 截图证据 | 推文、公告、GitHub Issue、Code of Conduct | 事件当事人发言截图 |
+| 概念插图 | 手绘/AI 生成（仅当 `allow_ai_fallback=true`） | 无法用实拍表达的概念 |
+
+同一事件不要重复用同一媒体头图；截图优先于 AI 生图（读者对真实截图的信任度远高于 AI 插图）。
