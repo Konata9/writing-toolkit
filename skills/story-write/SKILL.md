@@ -69,7 +69,7 @@ description: |
 
 ### Step 4: 正文叙事
 
-按结构模板，用 12 条叙事技法撰写正文。详见 `references/narrative-techniques.md`。
+按结构模板，用 13 条叙事技法撰写正文。详见 `references/narrative-techniques.md`。
 
 ### Step 5: 结尾
 
