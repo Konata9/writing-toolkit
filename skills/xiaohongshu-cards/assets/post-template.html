@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{POST_TITLE}} · 小红书卡片</title>
+
+<!-- Fonts: swap per style preset. Noto Sans SC (= 思源黑体) is the safe CJK default. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Engine: invariants only. Never put brand colour/font here.
+     core.css sits next to this file (copied together into the project src/). -->
+<link rel="stylesheet" href="core.css">
+
+<!-- ============================================================
+     STYLE PRESET — replace this :root block with the chosen preset
+     from references/styles/<style>.md  (default shown: tech-cobalt).
+     ============================================================ -->
+<style>
+:root {
+  --paper:#f6f7fa; --paper-2:#eef1f6; --paper-3:#e6eaf2; --surface:#ffffff;
+  --ink:#171b24; --ink-2:#3c4353; --ink-3:#6b7280; --ink-4:#98a0ae;
+  --rule:#e4e7ee; --rule-2:#d3d8e2;
+  --accent:#2352e0; --accent-2:#1b41bc; --accent-soft:#e9eeff; --accent-line:#c3d0ff;
+  --accent-ink:#ffffff; --accent-on-dark:#8fb0ff;
+  --highlight:#ff7a3c; --highlight-soft:#ffede4; --highlight-ink:#d1541f;
+  --dark:#14171f; --dark-2:#1d2230; --dark-3:#262c3b;
+  --dark-ink:#eef1f8; --dark-ink-2:#a9b2c4; --dark-rule:#2b3140;
+  --cover-paper:linear-gradient(180deg,#fbfcff 0%,var(--paper) 46%);
+  --cover-tint:linear-gradient(180deg,#eef2ff 0%,#e5ebff 58%,#dde5ff 100%);
+  --cover-tint-glow:#cdd9ff; --cover-paper-glow:var(--accent-soft);
+  --font-display:"Space Grotesk","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:"Noto Sans SC","PingFang SC","Hiragino Sans GB",sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     8-card skeleton. Every text node marked <!--REPLACE--> is content.
+     Card classes are fixed engine parts — do not invent new ones.
+     Card variants:  card--cover | card--cover-tint | card--dark | card--cta
+     Body layout:    body--top (anchor top) ; body--gap (add vertical rhythm)
+     ============================================================ -->
+
+<!-- 01 · COVER — hook: value in 3 seconds. 3:4, must pop in the feed. -->
+<section class="card card--cover-tint" id="c-01">
+  <div class="card__inner">
+    <div class="top">
+      <span class="eyebrow"><!--REPLACE: series / topic label--></span>
+      <div class="brand">
+        <img class="brand__logo" src="{{LOGO}}" alt="">
+        <span class="brand__name"><!--REPLACE: brand--></span>
+      </div>
+    </div>
+    <div class="body body--gap">
+      <div>
+        <p class="kicker"><!--REPLACE: kicker line--></p>
+        <h1 class="cover-h1 cover-h1--sm mt-20"><!--REPLACE: 2–3 line hook<br>with one <span class="hl">accent</span> phrase--></h1>
+        <p class="cover-sub mt-32"><!--REPLACE: one-line promise--></p>
+      </div>
+      <div class="callout">
+        <span class="callout__ico"><!--emoji--></span>
+        <p class="callout__t"><!--REPLACE: supporting fact--></p>
+      </div>
+    </div>
+    <div class="foot"><span class="foot__brand"><!--REPLACE--></span><span class="foot__page"><b>01</b> / 08</span></div>
+  </div>
+</section>
+
+<!-- 02 · POINT — one idea. Optional keycaps via .key / .keyline. -->
+<section class="card" id="c-02">
+  <div class="card__inner">
+    <div class="top">
+      <span class="eyebrow"><!--REPLACE: step label--></span>
+      <div class="brand"><img class="brand__logo" src="{{LOGO}}" alt=""><span class="brand__name"><!--REPLACE--></span></div>
+    </div>
+    <div class="body body--top body--gap">
+      <h2 class="title title--xl"><!--REPLACE: heading--></h2>
+      <p class="lede"><!--REPLACE: 2–3 short lines. Use <span class="cmd">code</span> and <strong>emphasis</strong> sparingly.--></p>
+      <div class="keyline">
+        <span class="keyitem"><span class="key">↑ ↓</span> 选择</span>
+        <span class="keyitem"><span class="key">Enter</span> 打开</span>
+        <span class="keyitem"><span class="key">Esc</span> 关闭</span>
+      </div>
+      <div class="callout">
+        <span class="callout__ico"><!--emoji--></span>
+        <p class="callout__t"><!--REPLACE: insight--></p>
+      </div>
+    </div>
+    <div class="foot"><span class="foot__brand"><!--REPLACE--></span><span class="foot__page"><b>02</b> / 08</span></div>
+  </div>
+</section>
+
+<!-- 03 · LIST — commands / features. .list--tight for 5+ rows. -->
+<section class="card" id="c-03">
+  <div class="card__inner">
+    <div class="top">
+      <span class="eyebrow"><!--REPLACE--></span>
+      <div class="brand"><img class="brand__logo" src="{{LOGO}}" alt=""><span class="brand__name"><!--REPLACE--></span></div>
+    </div>
+    <div class="body body--top">
+      <h2 class="title title--xl"><!--REPLACE: heading--></h2>
+      <p class="lede mt-24" style="margin-bottom:40px"><!--REPLACE: intro--></p>
+      <div class="list list--tight">
+        <div class="li"><span class="li__idx">/a</span><div class="li__main"><div class="li__t"><!--REPLACE--></div><div class="li__d"><!--REPLACE--></div></div></div>
+        <div class="li"><span class="li__idx">/b</span><div class="li__main"><div class="li__t"><!--REPLACE--></div><div class="li__d"><!--REPLACE--></div></div></div>
+        <div class="li"><span class="li__idx">/c</span><div class="li__main"><div class="li__t"><!--REPLACE--></div><div class="li__d"><!--REPLACE--></div></div></div>
+        <div class="li"><span class="li__idx">/d</span><div class="li__main"><div class="li__t"><!--REPLACE--></div><div class="li__d"><!--REPLACE--></div></div></div>
+      </div>
+    </div>
+    <div class="foot"><span class="foot__brand"><!--REPLACE--></span><span class="foot__page"><b>03</b> / 08</span></div>
+  </div>
+</section>
+
+<!-- 04 · SHOT — REAL screenshot only. Never re-draw OS/browser chrome. -->
+<section class="card" id="c-04">
+  <div class="card__inner">
+    <div class="top">
+      <span class="eyebrow"><!--REPLACE--></span>
+      <div class="brand"><img class="brand__logo" src="{{LOGO}}" alt=""><span class="brand__name"><!--REPLACE--></span></div>
+    </div>
+    <div class="body body--top body--gap">
+      <div>
+        <h2 class="title title--xl"><!--REPLACE: heading--></h2>
+        <p class="lede mt-24"><!--REPLACE--></p>
+      </div>
+      <div class="shot"><img src="{{SCREENSHOT}}" alt=""><!--REPLACE with a real screenshot--></div>
+    </div>
+    <div class="foot"><span class="foot__brand"><!--REPLACE--></span><span class="foot__page"><b>04</b> / 08</span></div>
+  </div>
+</section>
+
+<!-- 05 · TIMELINE — genuinely ordered steps (numbers are earned here). -->
+<section class="card" id="c-05">
+  <div class="card__inner">
+    <div class="top">
+      <span class="eyebrow"><!--REPLACE--></span>
+      <div class="brand"><img class="brand__logo" src="{{LOGO}}" alt=""><span class="brand__name"><!--REPLACE--></span></div>
+    </div>
+    <div class="body body--top body--gap">
+      <h2 class="title title--xl"><!--REPLACE: heading--></h2>
+      <div class="timeline">
+        <div class="tl"><div class="tl__dot">1</div><div><div class="tl__t"><!--REPLACE--></div><div class="tl__d"><!--REPLACE--></div></div></div>
+        <div class="tl"><div class="tl__dot">2</div><div><div class="tl__t"><!--REPLACE--></div><div class="tl__d"><!--REPLACE--></div></div></div>
+        <div class="tl"><div class="tl__dot">3</div><div><div class="tl__t"><!--REPLACE--></div><div class="tl__d"><!--REPLACE--></div></div></div>
+      </div>
+    </div>
+    <div class="foot"><span class="foot__brand"><!--REPLACE--></span><span class="foot__page"><b>05</b> / 08</span></div>
+  </div>
+</section>
+
+<!-- 06 · GRID — facts / comparison. .callout--highlight for a second accent. -->
+<section class="card" id="c-06">
+  <div class="card__inner">
+    <div class="top">
+      <span class="eyebrow"><!--REPLACE--></span>
+      <div class="brand"><img class="brand__logo" src="{{LOGO}}" alt=""><span class="brand__name"><!--REPLACE--></span></div>
+    </div>
+    <div class="body body--top body--gap">
+      <h2 class="title title--xl"><!--REPLACE: heading--></h2>
+      <div class="grid">
+        <div class="tile"><div class="tile__k">LABEL</div><div class="tile__v"><!--REPLACE--></div><div class="tile__d"><!--REPLACE--></div></div>
+        <div class="tile"><div class="tile__k">LABEL</div><div class="tile__v"><!--REPLACE--></div><div class="tile__d"><!--REPLACE--></div></div>
+        <div class="tile"><div class="tile__k">LABEL</div><div class="tile__v"><!--REPLACE--></div><div class="tile__d"><!--REPLACE--></div></div>
+        <div class="tile"><div class="tile__k">LABEL</div><div class="tile__v"><!--REPLACE--></div><div class="tile__d"><!--REPLACE--></div></div>
+      </div>
+    </div>
+    <div class="foot"><span class="foot__brand"><!--REPLACE--></span><span class="foot__page"><b>06</b> / 08</span></div>
+  </div>
+</section>
+
+<!-- 07 · MOCK — a MOCK is a concept diagram, not fake OS chrome.
+     Use only when no real screenshot exists, and keep it minimal. -->
+<section class="card" id="c-07">
+  <div class="card__inner">
+    <div class="top">
+      <span class="eyebrow"><!--REPLACE--></span>
+      <div class="brand"><img class="brand__logo" src="{{LOGO}}" alt=""><span class="brand__name"><!--REPLACE--></span></div>
+    </div>
+    <div class="body body--top body--gap" style="gap:32px">
+      <h2 class="title title--xl"><!--REPLACE: heading--></h2>
+      <p class="lede"><!--REPLACE--></p>
+      <div class="mock mock--compact">
+        <div class="mock__bar">
+          <img class="mock__cat" src="{{LOGO}}" alt="">
+          <span class="mock__mode"><!--REPLACE--></span>
+          <span class="mock__input"><!--REPLACE--></span>
+          <span class="mock__esc">ESC</span>
+        </div>
+        <div class="mock__body">
+          <div class="mock__row"><span class="mock__dot"></span><div class="mock__meta"><div class="mock__title"><!--REPLACE--></div><div class="mock__url"><!--REPLACE--></div></div><span class="mock__badge mock__badge--keep"><!--REPLACE--></span></div>
+          <div class="mock__row mock__row--dim"><span class="mock__dot"></span><div class="mock__meta"><div class="mock__title"><!--REPLACE--></div><div class="mock__url"><!--REPLACE--></div></div><span class="mock__badge mock__badge--warn"><!--REPLACE--></span></div>
+        </div>
+      </div>
+      <div class="callout callout--highlight">
+        <span class="callout__ico"><!--emoji--></span>
+        <p class="callout__t"><!--REPLACE: reassurance--></p>
+      </div>
+    </div>
+    <div class="foot"><span class="foot__brand"><!--REPLACE--></span><span class="foot__page"><b>07</b> / 08</span></div>
+  </div>
+</section>
+
+<!-- 08 · CTA — one clear action. No external links (platform rule). -->
+<section class="card card--cta" id="c-08">
+  <div class="card__inner">
+    <div class="top">
+      <span class="eyebrow eyebrow--highlight"><!--REPLACE--></span>
+      <div class="brand"><img class="brand__logo" src="{{LOGO}}" alt=""><span class="brand__name"><!--REPLACE--></span></div>
+    </div>
+    <div class="body body--top body--gap">
+      <h2 class="title title--xl"><!--REPLACE: action heading--></h2>
+      <p class="lede"><!--REPLACE--></p>
+      <div class="cta-box">
+        <div>
+          <div class="cta-box__label"><!--REPLACE--></div>
+          <div class="cta-box__main"><!--REPLACE: where to find it--></div>
+          <div class="cta-box__note"><!--REPLACE--></div>
+        </div>
+        <img class="cta-box__cat" src="{{LOGO}}" alt="">
+      </div>
+      <div class="callout">
+        <span class="callout__ico"><!--emoji--></span>
+        <p class="callout__t"><!--REPLACE: low-friction question to drive comments--></p>
+      </div>
+    </div>
+    <div class="foot"><span class="foot__brand"><!--REPLACE--></span><span class="foot__page"><b>08</b> / 08</span></div>
+  </div>
+</section>
+
+</body>
+</html>

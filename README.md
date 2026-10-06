@@ -49,6 +49,15 @@
 - 口语插入检查
 - 结尾质量评估
 
+### xiaohongshu-cards — 小红书图文卡片
+
+把素材（博客/草稿/大纲）制作成可直接发布的小红书图文卡片（贴图）与笔记文案：
+- 六步流程：收素材 → 补充内容(+source-verify) → 确定风格 → 生成卡片 → 反 AI 味自检 → 确认后修改
+- **引擎固定、风格可变**：版式/字号/安全区是引擎，配色/字体是风格预设
+- 风格登记表 + 小红书调研新增风格的方法
+- 卡片视角「反 AI 味」自检（只给建议，用户确认后才改）
+- HTML/CSS 渲染 + Playwright 导出 1080×1440 PNG
+
 ## 兼容性
 
 本仓库同时兼容 **Claude Code** 和 **OpenCode**，SKILL 文件结构无需更改即可在两个平台使用。
@@ -69,6 +78,7 @@ npx skills install Konata9/writing-toolkit/image-sourcing
 npx skills install Konata9/writing-toolkit/story-write
 npx skills install Konata9/writing-toolkit/publish-guard
 npx skills install Konata9/writing-toolkit/humanize-plus
+npx skills install Konata9/writing-toolkit/xiaohongshu-cards
 ```
 
 ### Claude Code/OpenCode
@@ -83,6 +93,7 @@ cp -r writing-toolkit/skills/image-sourcing ~/.claude/skills/
 cp -r writing-toolkit/skills/story-write ~/.claude/skills/
 cp -r writing-toolkit/skills/publish-guard ~/.claude/skills/
 cp -r writing-toolkit/skills/humanize-plus ~/.claude/skills/
+cp -r writing-toolkit/skills/xiaohongshu-cards ~/.claude/skills/
 ```
 
 推荐使用软链接方式安装，确保 `git pull` 更新后 SKILL 自动同步，避免多份拷贝：
@@ -98,6 +109,7 @@ ln -sfn "$(pwd)/writing-toolkit/skills/image-sourcing" ~/.claude/skills/image-so
 ln -sfn "$(pwd)/writing-toolkit/skills/story-write" ~/.claude/skills/story-write
 ln -sfn "$(pwd)/writing-toolkit/skills/publish-guard" ~/.claude/skills/publish-guard
 ln -sfn "$(pwd)/writing-toolkit/skills/humanize-plus" ~/.claude/skills/humanize-plus
+ln -sfn "$(pwd)/writing-toolkit/skills/xiaohongshu-cards" ~/.claude/skills/xiaohongshu-cards
 ```
 
 ## 使用
@@ -112,6 +124,7 @@ ln -sfn "$(pwd)/writing-toolkit/skills/humanize-plus" ~/.claude/skills/humanize-
 "根据调研写一篇文章"      → 自动调用 story-write
 "对这篇文章做深度润色"    → 自动调用 humanize-plus
 "检查平台合规"            → 自动调用 publish-guard
+"把这篇博客做成小红书卡片"  → 自动调用 xiaohongshu-cards
 ```
 
 也可以在项目 SKILL 工作流中显式调用：
@@ -122,6 +135,7 @@ Skill(image-sourcing)  # 配图下载，参数 allow_ai_fallback / image_types
 Skill(story-write)     # 故事化写作，参数 structure / length
 Skill(humanize-plus)   # 深度润色，内容类型选择 narrative/casual/analysis
 Skill(publish-guard)   # 平台合规扫描，平台选择 xiaohongshu/wechat/both
+Skill(xiaohongshu-cards)  # 小红书图文卡片，参数 style / outline / lint
 ```
 
 ### OpenCode
@@ -148,6 +162,10 @@ OpenCode 会自动将已安装的 SKILL 注入 agent 上下文。在对话中描
                               publish-guard（平台合规检查）
                                         ↓
                                     发布
+
+另有支线：xiaohongshu-cards（小红书图文卡片）
+    素材 → 补充(+source-verify / image-sourcing) → 确定风格 → 出图
+         → 反 AI 味自检(仅建议) → 确认后修改
 ```
 
 ## 依赖关系
@@ -158,9 +176,11 @@ image-sourcing  ──独立运行──→  图片搜索 / 下载 / 质量验�
 story-write     ──独立运行──→  标题 / 导读 / 叙事技法 / AI 痕迹排查 / 配文
 humanize-plus   ──内部调用──→  humanizer-zh（表层去 AI 味）+ 结构性检查
 publish-guard   ──独立运行──→  禁用词 / 灰色词汇 / 最高级 / 外文名词 / 标题安全
+xiaohongshu-cards ──编排──→  可调用 source-verify / image-sourcing / humanize-plus / publish-guard；依赖 Playwright 渲染
 ```
 
 - `humanize-plus` 依赖 `humanizer-zh`（需预先安装）
+- `xiaohongshu-cards` 依赖 Playwright（MCP 或本地）；其余为可选调用
 - 其余 SKILL 无外部依赖
 
 ## 适用项目
