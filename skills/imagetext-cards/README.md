@@ -26,14 +26,18 @@
 
 > 「大纲确认」为**条件项**：卡数 ≥6 / 新风格 / 多数字事实时必做；短内容且沿用既有系列可跳过。
 
-## 输出目录（落在用户当前项目）
+## 输出目录
+
+生成物建议放在一个**专门的图文卡片项目**下（与博客/代码仓库解耦），每个系列一个目录：
 
 ```
-<project>/docs/cards/<slug>/
+<cards-project>/<slug>/
 ├── README.md  post-1-*.md  post-2-*.md
 ├── src/       core.css  post1.html  assets/
 └── cards/     post1/01-cover.png … 08-cta.png
 ```
+
+例：`~/Workspace/imagetext-posts/<slug>/`。没有专门项目时回落到当前项目的 `docs/cards/<slug>/`。
 
 ## 平台
 

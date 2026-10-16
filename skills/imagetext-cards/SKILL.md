@@ -69,10 +69,12 @@ description: >-
 
 ---
 
-## 输出目录（生成物落在用户当前项目）
+## 输出目录
+
+生成物建议放在一个**专门的图文卡片项目**下（与博客/代码仓库解耦），每个系列一个目录：
 
 ```
-<user-project>/docs/cards/<slug>/
+<cards-project>/<slug>/
 ├── README.md          # 发布说明：标题候选/正文/标签/发布时间
 ├── post-1-<name>.md   # 帖子一完整文案
 ├── post-2-<name>.md   # （可选）系列第二篇
@@ -85,6 +87,8 @@ description: >-
     ├── post1/01-cover.png … 08-cta.png
     └── post2/…
 ```
+
+例：`~/Workspace/imagetext-posts/<slug>/`。若用户没有专门的卡片项目，再回落到当前项目的 `docs/cards/<slug>/`。
 
 ---
 
