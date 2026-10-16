@@ -144,7 +144,7 @@
 
 | 类型 | 首次出现格式 | 后续使用 | 示例 |
 |------|------------|---------|------|
-| 人名 | 中文全名（English Name） | 中文姓氏 | "史蒂夫·乔布斯（Steve Jobs）"→"乔布斯" |
+| 人名 | 中文全名（English Name） | 中文姓氏 | "史蒂夫•乔布斯（Steve Jobs）"→"乔布斯" |
 | 机构/学校 | 中文全名（English Name） | 中文简称 | "瓦萨学院（Vassar College）"→"瓦萨学院" |
 | 公司 | 中文全名（English Name） | 中文简称 | "雷明顿兰德（Remington Rand）"→"雷明顿兰德" |
 | 地点/建筑 | 中文全名（English Name） | 中文 | "摩尔学院（Moore School）大楼" |
