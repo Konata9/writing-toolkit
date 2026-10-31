@@ -43,7 +43,8 @@
 ### 识别技巧（判断图片 URL 路径）
 
 - URL 含 `image`、`wp-content/uploads`、`images2/news/bigimage` → 通常是高质量头图
-- URL 含 `i.insider.com`、`GettyImages` → 通常是人像
+- URL 含 `i.insider.com`、`GettyImages` → 通常是人像（**仅作识别线索**，Getty 图仍受
+  「禁止使用的来源」约束：带水印一律丢弃，无水印的编辑图需调用方确认授权）
 - URL 含 `hsossms`（36氪 CDN）、`resource/image`（InfoQ CDN）→ 多是正文内嵌截图
 - 中文媒体（36氪、InfoQ）文章往往内嵌大量截图，是最方便的截图来源
 
@@ -57,14 +58,13 @@
 
 ### 图源署名记录格式
 
-| 文件名 | 内容描述 | 图源媒体 + 文章标题 | URL | 署名 |
-|--------|----------|---------------------|-----|------|
-| openai-ceo-portrait.jpg | Sam Altman 演讲照片 | TechCrunch - "..." | https://... | 图源：TechCrunch |
+列定义与示例见 `SKILL.md` 的「输出」章节（文件名 / 内容描述 / 图源媒体 + 文章标题 /
+URL / 署名 / 处理），此处不重复，避免两份模板漂移。
 
-正文插入格式统一为：
+正文插入格式统一为（已落盘用本地相对路径，未落盘才用远程 URL）：
 
 ```markdown
-![图片描述](图片URL)
+![图片描述](assets/xxx.jpg)
 *▲ 中文说明文字（图源：来源名）*
 ```
 
@@ -121,19 +121,16 @@
 ## 四、命名规范
 
 - 小写英文 + 连字符
-- `.jpg` 优先；`.png` 仅透明度需要时用
-- 描述内容：`{subject}-{descriptor}.jpg`
-- 示例：`alan-turing-portrait.jpg`、`05-greek-plato-academy.jpg`
+- **扩展名跟随真实格式**：照片用 `.jpg`，透明图 / 截图 / 图表用 `.png`
+- 格式转换后同步改名（WebP→PNG 就改成 `.png`），禁止 `.jpg` 里装 PNG
+- 描述内容：`{subject}-{descriptor}.{ext}`
+- 示例：`alan-turing-portrait.jpg`、`05-greek-plato-academy.jpg`、`github-issue-42.png`
 - 若项目有前缀约定（如章节号 `05-`），遵循项目约定
+- 具体的格式判定、转换与压缩规则见 `format-and-optimize.md`
 
 ---
 
 ## 五、版权记录格式
 
-在 research.md 的图片来源部分或独立文件记录：
-
-```markdown
-| 文件名 | 内容描述 | 来源 | 许可协议 |
-|--------|----------|------|---------|
-| 05-greek-socrates-statue.jpg | 苏格拉底大理石雕像，罗马复制品，约公元1世纪 | Wikimedia Commons | Public Domain |
-```
+列定义与示例见 `SKILL.md` 的「输出」章节（文件名 / 内容描述 / 来源 / 许可协议 / 处理），
+此处不重复。记录写入 research.md 的图片来源部分或独立文件。

@@ -15,9 +15,12 @@
 ## 能力
 
 - 按来源优先级搜索（public_domain：Wikimedia Commons → 博物馆馆藏 → 权威档案；news_editorial：来源文章图片 → 权威科技媒体头图 → 正文截图）
-- 5 种下载方法（`Special:FilePath` → HTML 抓取 → REST API → 直接下载 → 媒体 CDN 直链 + Playwright 兜底 + WebP 转换）
+- 5 种下载方法（`Special:FilePath` → HTML 抓取 → REST API → 直接下载 → 媒体 CDN 直链 + Playwright 兜底）
+- 下载韧性：统一超时 + 有限重试 + 代理探测（直连失败才走代理），整任务 10 分钟预算，绝不无限等待
+- 格式归一化：SVG → PNG；WebP 按内容转 PNG（透明/截图/图表）或 JPEG（照片）
+- 大图压缩：> 3MB 或长边 > 2400px 压到长边 ≤ 2000px，目标 ≤ 1.5MB，截图保留 PNG 保文字清晰
 - 质量阈值验证（文件类型、大小、水印检测、内容与事件相关）
-- 版权信息表（public_domain）或图源署名表（news_editorial）生成
+- 版权信息表（public_domain）或图源署名表（news_editorial）生成，统一含「处理」列
 
 ## 参数
 
@@ -27,15 +30,22 @@
 | `image_list` | 图片清单（类型 + 关键词） | 必填 |
 | `output_dir` | 输出目录 | 必填 |
 | `allow_ai_fallback` | 是否允许 AI 生成后备 | `false` |
-| `image_types` | 允许的图片类型 | 调用方指定 |
+| `image_types` | 允许的图片类型（硬白名单，不在清单内的图丢弃换图） | 调用方指定 |
 
 ## 边界与风险
 
 - 搜索上限 10 个 query，不无限搜索
+- 下载不无限重试：单 URL ≤60 秒（1 次 curl 调用含 `--retry 1`）、单图 2 种方法、整任务 10 分钟；超时先探代理，代理也不行就换图
 - AI 图仅在 `allow_ai_fallback=true` 时允许，且必须标注"（AI生成示意图）"
 - 禁止使用水印图、来源不明的 Pinterest 图、无许可信息的百度/Bing 图
 - news_editorial 模式禁止使用通用图库水印图和低清缩略图；媒体封面必须确认内容后再用（可能是随机插图）
-- 图片不是正文的阻断条件——不足 3 张时提供手动下载 URL，不阻塞写作
+- 图片不是正文的阻断条件——不足 `image_list` 要求数量（未指定时按 3 张）时提供手动下载 URL，不阻塞写作
+
+## 参考文件
+
+- `references/source-and-license.md`：来源优先级与许可判定
+- `references/download-methods.md`：5 种下载方法、超时/代理/重试预算、质量阈值
+- `references/format-and-optimize.md`：SVG/WebP 格式归一化与大图压缩
 
 ## 与 story-write 的关系
 

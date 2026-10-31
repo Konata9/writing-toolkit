@@ -16,7 +16,9 @@
 
 为文章搜索、下载并记录公有领域/CC 许可的配图：
 - 来源优先级（Wikimedia Commons → 博物馆馆藏 → 权威档案）
-- 4 种下载方法（`Special:FilePath` → HTML 抓取 → REST API → 直接下载）
+- 5 种下载方法（`Special:FilePath` → HTML 抓取 → REST API → 直接下载 → 媒体 CDN 直链 + Playwright 兜底）
+- 下载韧性（统一超时 + 有限重试 + 代理探测，整任务 10 分钟预算）
+- 格式归一化与压缩（SVG/WebP → PNG/JPEG，大图压到长边 ≤ 2000px，目标 ≤ 1.5MB）
 - 质量阈值验证（文件类型、大小、水印检测）
 - AI 后备方案（参数化 `allow_ai_fallback`，必须标注）
 

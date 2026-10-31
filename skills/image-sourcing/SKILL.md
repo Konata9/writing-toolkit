@@ -37,7 +37,7 @@ description: |
 | `image_list` | 图片清单（类型 + 关键词），如"创始人肖像 / 核心产品照片"；news_editorial 模式可为"封面头图 / 核心人物肖像 / 截图证据" | 必填 |
 | `output_dir` | 输出目录（如 `assets/`） | 必填 |
 | `allow_ai_fallback` | 找不到实物图时是否允许 AI 生成后备 | `false` |
-| `image_types` | 本项目允许的图片类型清单 | 调用方指定 |
+| `image_types` | 本项目允许的图片类型清单（**硬白名单**，类型定义见 `references/download-methods.md` 的「图片类型覆盖」）；不在清单内的图直接丢弃换图 | 调用方指定 |
 
 > `allow_ai_fallback=false` 的项目（如技术史项目）严格禁止 AI 图；古代史项目
 > （遗址无实物照片）通常设为 `true`。这个参数由各项目的调研技能决定，不要擅自改。
@@ -48,25 +48,37 @@ description: |
 ### Step 2: 搜索图片
 
 - `public_domain`：按 `references/source-and-license.md` 的来源优先级搜索，优先 Wikimedia Commons。
-- `news_editorial`：按 `references/source-and-license.md` 的「新闻/编辑图来源」优先级搜索——优先从调用方提供的 research.md / 事件来源文章中提取图片，其次按关键词搜索权威科技媒体（TechCrunch、The Verge、Ars Technica、WIRED、Bloomberg、Reuters、36氪、虎嗅等）的文章配图。
+- `news_editorial`：按 `references/source-and-license.md` 的「新闻/编辑图来源」优先级搜索——优先从调用方提供的 research.md / 事件来源文章中提取图片，其次搜索权威科技媒体（**媒体清单以该文件为准，此处不重复**）。
 
 ### Step 3: 下载图片
 
 按 `references/download-methods.md` 的方法下载：
 
 - `public_domain`：方法 1-4（`Special:FilePath` → HTML 抓取 → REST API → 直接下载）。
-- `news_editorial`：方法 5（媒体 CDN 直链 + Playwright 兜底 + WebP 转换）。
+- `news_editorial`：方法 5（媒体 CDN 直链 + Playwright 兜底）。
 
-### Step 4: 验证图片质量
+所有下载带统一超时参数（`--connect-timeout 8 --max-time 30 --retry 1`）。出现超时 /
+连接失败（curl 退出码 6/7/28/35）时，先探测代理再重试；**重试有硬上限**——单 URL 一次
+调用内最多 2 个请求（含 `--retry 1`，约 60 秒），失败只换方法，不再重跑同一条命令；
+单图 2 种方法、整任务 10 分钟。详见 `references/download-methods.md` 的「超时、代理与重试预算」。
 
-下载后逐张验证：文件类型、大小、无水印、非 AI 冒充。详细阈值见
-`references/download-methods.md` 的"质量阈值"。news_editorial 模式还需
-**打开图片确认内容与事件相关**（媒体封面可能是随机插图）。
+### Step 4: 验证与归一化
+
+按顺序处理，命令见 `references/format-and-optimize.md`：
+
+1. **类型与内容验证**：`file --mime-type` 确认是图片（不是 HTML / 文本）、无水印、非 AI 冒充，
+   且类型在 `image_types` 白名单内（不在则丢弃换图）。news_editorial 模式还需
+   **打开图片确认内容与事件相关**（媒体封面可能是随机插图）。此步不判断体积。
+2. **格式归一化**：SVG → PNG；WebP 按内容分流（透明底 / 截图 / 图表 → PNG，
+   连续色调照片 → JPEG）。扩展名必须与真实格式一致。
+3. **压缩**：> 3 MB 或长边 > 2400px 的图片，压到长边 ≤ 2000px，目标 ≤ 1.5MB；
+   文字类截图保留 PNG 不转 JPEG。
+4. **复验**：重新确认尺寸、体积、宽度 ≥ 600px，并打开图片确认文字可读、无块状伪影。
 
 ### Step 5: 记录版权信息
 
-- `public_domain`：生成版权信息表（文件名 / 描述 / 来源 / 许可协议）。
-- `news_editorial`：生成图源署名表（文件名 / 描述 / 图源媒体 + 文章标题 + URL / 图源署名）。
+- `public_domain`：生成版权信息表（文件名 / 描述 / 来源 / 许可协议 / 处理）。
+- `news_editorial`：生成图源署名表（文件名 / 描述 / 图源媒体 + 文章标题 + URL / 图源署名 / 处理）。
 
 ---
 
@@ -84,7 +96,7 @@ description: |
 ### 来源优先级（news_editorial 模式）
 
 1. 调用方 research.md / 事件来源文章中已引用的媒体图片（og:image、正文配图）
-2. 权威科技媒体的文章头图（TechSpot、Ars Technica、New Scientist、WIRED、The Verge；中文：36氪、InfoQ、虎嗅）
+2. 权威科技媒体的文章头图（媒体清单见 `references/source-and-license.md` 的「新闻/编辑图来源」，此处不重复）
 3. 媒体正文内嵌的实拍图 / 截图（人物肖像、推文/公告截图、产品图）
 4. 编辑插画 / 图表（仅在前三者缺时）
 5. AI 生成（仅当 `allow_ai_fallback=true`，且必须标注）
@@ -94,13 +106,18 @@ description: |
 
 ### 质量阈值
 
-- < 10 KB：丢弃（可能是缩略图 / 损坏）
-- 50 KB – 3 MB：合格
-- > 3 MB：可选优化
+完整阈值表见 `references/download-methods.md` 的「质量阈值」，此处只列判定要点：
 
-### 搜索上限
+- 宽 < 600px：丢弃（低清缩略图）
+- < 10 KB：先用 `file` 确认；非图片或照片类高色数图丢弃，纯色图形 / 截图可保留
+- > 3 MB 或长边 > 2400px：压缩到长边 ≤ 2000px，目标 ≤ 1.5MB
+
+### 搜索与下载上限
 
 - 最多搜索 10 个 query，仍无结果则进入后备方案，不无限搜索。
+- 下载预算：单 URL ≤60 秒（1 次 curl 调用，含 `--retry 1`）、单图 2 种方法、单图 ≤3 分钟、
+  整任务 ≤10 分钟。超预算即停止，输出已有图片 + 缺失清单，不阻塞正文写作。
+- 计时口径：从第一次下载请求到最后一张图验证完成；搜索、压缩、内容确认不计入。
 
 ### AI 图标注
 
@@ -116,18 +133,21 @@ description: |
 `public_domain` 模式——版权信息表：
 
 ```markdown
-| 文件名 | 内容描述 | 来源 | 许可协议 |
-|--------|----------|------|---------|
-| alan-turing-portrait.jpg | 图灵肖像 | Wikimedia Commons | Public Domain |
+| 文件名 | 内容描述 | 来源 | 许可协议 | 处理 |
+|--------|----------|------|---------|------|
+| alan-turing-portrait.jpg | 图灵肖像 | Wikimedia Commons | Public Domain | 压缩 4.1MB→1.1MB |
 ```
 
 `news_editorial` 模式——图源署名表：
 
 ```markdown
-| 文件名 | 内容描述 | 图源媒体 + 文章标题 | URL | 署名 |
-|--------|----------|---------------------|-----|------|
-| openai-ceo-portrait.jpg | Sam Altman 演讲照片 | TechCrunch - "..." | https://... | 图源：TechCrunch |
+| 文件名 | 内容描述 | 图源媒体 + 文章标题 | URL | 署名 | 处理 |
+|--------|----------|---------------------|-----|------|------|
+| openai-ceo-portrait.jpg | Sam Altman 演讲照片 | TechCrunch - "..." | https://... | 图源：TechCrunch | WebP→JPEG |
 ```
+
+「处理」列填格式转换与压缩结果（`SVG→PNG`、`WebP→PNG`、`WebP→JPEG`、
+`压缩 4.1MB→1.1MB`），未处理则留 `-`。
 
 ---
 
@@ -136,8 +156,16 @@ description: |
 | 场景 | 处理 |
 |------|------|
 | 搜索 10 次无果 | 停止搜索；若 `allow_ai_fallback=true` 生成 AI 提示词，否则标注缺失并告知用户 |
-| 下载失败 | 换下载方法重试；仍失败则换一张替代图 |
+| 下载超时 / 连不上（退出码 6/7/28/35） | 先探测代理（环境变量 → `scutil --proxy` → 本地 7890 等端口，并实测能出网），有则带 `-x` 重试 |
+| 代理重试后仍失败 | 走 Playwright 兜底（两种模式都可用）；仍失败则换图，记录 `failed: timeout` |
+| 下载重试超预算 | 停止该图，不无限重试；整任务超 10 分钟直接输出已有结果 + 缺失清单 |
+| 403 | 不走代理（换代理无用）；换 UA、走 Playwright 或换来源 |
+| 404 | 不走代理；直接换来源或换文件名 |
+| 429（限流） | 退避 5–10 秒重试 1 次；仍 429 则换来源，不连续重试 |
+| 图片是 SVG / WebP | 按 `references/format-and-optimize.md` 归一化：SVG→PNG，WebP 按内容转 PNG 或 JPEG |
+| 图片 > 3MB 或长边 > 2400px | 压到长边 ≤ 2000px，目标 ≤ 1.5MB；最多再压 1 轮（总计 2 轮），仍超则保留并记录原因 |
+| 类型不在 `image_types` 白名单 | 丢弃换图，不将就使用 |
 | 图片疑似损坏 | `file` 命令确认非图片则删除重下 |
 | news_editorial 模式抓取被拒（403/robots） | 换 Playwright 兜底；仍失败则换同一事件的其他媒体来源 |
 | 媒体封面与事件无关（随机插图） | 丢弃该图，改从正文内嵌图或另一媒体获取 |
-| 不足 3 张 | 记录缺失清单，提供手动下载 URL，不阻塞正文写作 |
+| 不足 `image_list` 要求数量（未指定时按 3 张） | 记录缺失清单，提供手动下载 URL，不阻塞正文写作 |
